@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Copy-Paste Helper</title>
+    <style>
+        :root {
+            --bg-color: #2e1065;
+            --card-bg: rgba(255, 255, 255, 0.1);
+            --text-color: #fff1f2;
+            --text-muted: #fbcfe8;
+
+            --primary-color: #f97316;
+            --primary-hover: #ea580c;
+
+            --secondary-color: #831843;
+            --secondary-hover: #9d174d;
+
+            --border-color: rgba(255, 255, 255, 0.2);
+            --success-color: #10b981;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            height: 100%;
+            background-color: #2e1065;
+            background-image: linear-gradient(135deg, #c2410c 0%, #be185d 100%);
+            background-attachment: fixed;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: transparent;
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .main-container {
+            width: 100%;
+            max-width: 800px;
+            padding: 20px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .content-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .glass-card {
+            width: 100%;
+            max-width: 600px;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        textarea {
+            width: 100%;
+            height: 180px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            color: #fff;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            line-height: 1.5;
+            resize: none;
+            outline: none;
+            transition: all 0.2s ease;
+            margin-bottom: 0;
+        }
+
+        textarea:focus {
+            border-color: var(--text-muted);
+            box-shadow: 0 0 0 3px rgba(251, 207, 232, 0.2);
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        textarea::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+            font-family: inherit;
+            font-size: 1rem;
+            text-align: left;
+            padding-top: 0;
+            letter-spacing: normal;
+            text-transform: none;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 24px;
+            align-items: flex-start;
+        }
+
+        .btn-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-label {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .btn .icon {
+            font-size: 1.1em;
+        }
+
+        .btn-img {
+            width: 30px;
+            height: 30px;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-useless:active {
+            transform: scale(0.98);
+        }
+
+        .btn-clear {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.5);
+            color: #fca5a5;
+        }
+
+        .btn-clear:hover {
+            background: rgba(239, 68, 68, 0.4);
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--secondary-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary:active {
+            transform: translateY(0);
+        }
+
+        .status-message {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: var(--success-color);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .status-message.hidden {
+            opacity: 0;
+            transform: translateY(-10px);
+            pointer-events: none;
+        }
+
+        h1 {
+            margin-bottom: 2rem;
+            color: #fff;
+            text-align: center;
+            letter-spacing: -0.025em;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            font-family: 'Playfair Display', serif;
+            line-height: 1.2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .brand {
+            display: flex;
+            justify-content: center;
+            gap: 2px;
+        }
+
+        .letter {
+            display: inline-block;
+            font-size: 5rem;
+            font-weight: 900;
+            letter-spacing: normal;
+            background: linear-gradient(to bottom, #fff, #fbcfe8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transform-origin: top center;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 600px) {
+
+            body {
+                padding: 10px;
+                overflow-y: auto;
+                overflow-x: hidden;
+            }
+
+            .main-container {
+                max-width: 100%;
+                padding: 10px;
+            }
+
+            .letter {
+                font-size: 3rem;
+            }
+
+            .tagline {
+                font-size: 0.9rem;
+            }
+
+            .pointer {
+                display: none;
+            }
+
+            .glass-card {
+                max-width: 100%;
+                padding: 12px;
+            }
+
+            textarea {
+                height: 140px;
+                font-size: 0.9rem;
+                padding: 12px;
+            }
+
+            .btn-group {
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 10px;
+                width: 100%;
+            }
+
+            .btn-wrapper {
+                flex: 1;
+                min-width: 40%;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+                padding: 16px;
+            }
+
+            #clearBtn {
+                flex-basis: 100%;
+                margin-top: 5px;
+            }
+
+            .history-container {
+                max-width: 100%;
+                padding: 15px;
+            }
+
+            .history-item {
+                padding-top: 6px;
+                padding-bottom: 6px;
+            }
+
+
+        }
+
+        @media (max-width: 900px) {
+            .pointer {
+                display: none !important;
+            }
+        }
+
+        .history-container {
+            width: 100%;
+            max-width: 600px;
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+
+            max-height: 40vh;
+            overflow: hidden;
+        }
+
+        .history-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+
+            max-height: 30vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+
+            padding-right: 5px;
+        }
+
+        @media (max-width: 400px) {
+
+            .letter {
+                font-size: 2.4rem;
+            }
+
+            textarea {
+                height: 120px;
+            }
+
+            .history-list {
+                max-height: 150px;
+            }
+        }
+
+
+        .pointer {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Bangers', cursive;
+            font-size: 1.5rem;
+            color: #facc15;
+            text-shadow: 2px 2px 0 #000;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .pointer-left {
+            right: 100%;
+            margin-right: -20px;
+            transform: rotate(-10deg);
+        }
+
+        .pointer-left .arrow {
+            font-size: 2rem;
+        }
+
+        .pointer-right {
+            left: 100%;
+            margin-left: -20px;
+            transform: rotate(10deg);
+        }
+
+        .pointer-right .arrow {
+            font-size: 2rem;
+            transform: rotate(180deg);
+        }
+
+        .history-container {
+            width: 100%;
+            max-width: 600px;
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+
+            max-height: 250px;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+
+        .history-container h2 {
+            color: var(--text-muted);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .history-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .history-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .history-list::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+        }
+
+        .history-list::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+
+        .history-list::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .history-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .history-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary-color);
+            transform: translateX(5px);
+            color: #fff;
+        }
+
+        .history-item:active {
+            transform: translateX(2px);
+        }
+
+        .copyright-footer {
+            position: fixed;
+            bottom: 10px;
+            width: 100%;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.8rem;
+            pointer-events: none;
+        }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;500;600;700&family=JetBrains+Mono:wght@400&family=Orbitron:wght@400;700;900&family=Permanent+Marker&family=Bangers&family=Outfit:wght@300;400;700;900&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="main-container">
+        <h1>
+            <span class="brand">
+                <span class="letter letter-c">C</span>
+                <span class="letter letter-p">P</span>
+                <span class="letter letter-h">H</span>
+            </span>
+            <span class="tagline">the future, the past and the present</span>
+        </h1>
+        <div class="content-wrapper">
+            <div class="pointer pointer-left">
+                <span class="text">WRITE HERE</span>
+                <span class="arrow">➔</span>
+            </div>
+            <div class="glass-card">
+                <textarea id="textInput" placeholder="Paste your text here... or type something..."></textarea>
+            </div>
+            <div class="pointer pointer-right">
+                <span class="arrow">➔</span>
+                <span class="text">WRITE HERE</span>
+            </div>
+        </div>
+        <div class="btn-group">
+            <div class="btn-wrapper">
+                <button id="copyBtn" class="btn btn-primary">
+                    <span class="icon" style="font-size: 1.5rem;">📋</span>
+                </button>
+                <span class="btn-label">copy</span>
+            </div>
+            <div class="btn-wrapper">
+                <button id="pasteBtn" class="btn btn-secondary">
+                    <span class="icon" style="font-size: 1.5rem;">📥</span>
+                </button>
+                <span class="btn-label">paste</span>
+            </div>
+            <button id="clearBtn" class="btn btn-clear">CLEAR</button>
+        </div>
+        <div id="statusMessage" class="status-message hidden">Copied!</div>
+
+        <div class="history-container">
+            <h2>Clipboard History</h2>
+            <ul id="historyList" class="history-list">
+            </ul>
+        </div>
+    </div>
+    <footer class="copyright-footer">
+        <p>&copy; Copyright by Harsh Mishra, @ Copy Paste Helper</p>
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const textInput = document.querySelector('#textInput');
+            const copyBtn = document.querySelector('#copyBtn');
+            const pasteBtn = document.querySelector('#pasteBtn');
+            const statusMessage = document.querySelector('#statusMessage');
+            const clearBtn = document.querySelector('#clearBtn');
+            const historyList = document.querySelector('#historyList');
+
+            const showStatus = (message, isError = false) => {
+                statusMessage.textContent = message;
+                statusMessage.style.backgroundColor = isError ? '#ef4444' : '#10b981';
+                statusMessage.classList.remove('hidden');
+
+                setTimeout(() => {
+                    statusMessage.classList.add('hidden');
+                }, 2000);
+            };
+
+            let clipboardHistory = [];
+
+            const loadHistory = () => {
+                const stored = localStorage.getItem('clipboardHistory');
+                if (stored) {
+                    try {
+                        clipboardHistory = JSON.parse(stored);
+                        renderHistory();
+                    } catch (e) {
+                        console.error("Failed to parse history", e);
+                    }
+                }
+            };
+
+            const saveHistory = () => {
+                localStorage.setItem('clipboardHistory', JSON.stringify(clipboardHistory));
+            };
+
+            const renderHistory = () => {
+                historyList.innerHTML = '';
+                clipboardHistory.forEach((item) => {
+                    const li = document.createElement('li');
+                    li.className = 'history-item';
+                    li.textContent = item;
+                    li.title = "Click to append";
+
+                    li.addEventListener('click', () => {
+                        textInput.value += item;
+                        showStatus('Appended from history!');
+                        li.style.borderColor = '#10b981';
+                        setTimeout(() => li.style.borderColor = 'transparent', 300);
+                    });
+
+                    historyList.appendChild(li);
+                });
+            };
+
+            const addToHistory = (text) => {
+                if (!text || !text.trim()) return;
+                clipboardHistory = clipboardHistory.filter(item => item !== text);
+                clipboardHistory.unshift(text);
+                if (clipboardHistory.length > 5) {
+                    clipboardHistory.pop();
+                }
+                saveHistory();
+                renderHistory();
+            };
+
+            loadHistory();
+
+            copyBtn.addEventListener('click', async () => {
+                const content = textInput.value;
+                if (!content) {
+                    showStatus('Nothing to copy!', true);
+                    return;
+                }
+
+                try {
+                    await navigator.clipboard.writeText(content);
+                    addToHistory(content);
+                    showStatus('Copied!');
+                } catch (err) {
+                    console.error('Failed to copy: ', err);
+                    showStatus('Failed to copy', true);
+                }
+            });
+
+            pasteBtn.addEventListener('click', async () => {
+                try {
+                    const text = await navigator.clipboard.readText();
+                    addToHistory(text);
+                    textInput.value += text;
+                    textInput.focus();
+                    showStatus('Pasted!');
+                    textInput.style.transition = 'background-color 0.2s';
+                    textInput.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+                    setTimeout(() => {
+                        textInput.style.backgroundColor = '';
+                    }, 200);
+
+                } catch (err) {
+                    console.error('Failed to paste: ', err);
+                    showStatus('Failed to paste (Allow permissions)', true);
+                }
+            });
+
+            if (clearBtn) {
+                clearBtn.addEventListener('click', () => {
+                    textInput.value = '';
+                    textInput.focus();
+                    showStatus('Cleared!');
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
