@@ -7,7 +7,7 @@
     <title>Copy-Paste Helper</title>
     <style>
         :root {
-            --bg-color: #2e1065;
+            --bg-color: #be185d;
             --card-bg: rgba(255, 255, 255, 0.1);
             --text-color: #fff1f2;
             --text-muted: #fbcfe8;
@@ -30,10 +30,6 @@
 
         html {
             height: 100%;
-            background-color: #2e1065;
-            background-image: linear-gradient(135deg, #c2410c 0%, #be185d 100%);
-            background-attachment: fixed;
-            overflow: hidden;
         }
 
         body {
@@ -44,6 +40,18 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            position: relative;
+        }
+
+        .fixed-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #2e1065;
+            background-image: linear-gradient(135deg, #c2410c 0%, #be185d 100%);
+            z-index: -1;
         }
 
         .main-container {
@@ -266,11 +274,18 @@
         }
 
         @media (max-width: 600px) {
+            html {
+                height: auto;
+                min-height: 100%;
+            }
 
             body {
                 padding: 10px;
-                overflow-y: auto;
+                overflow-y: visible;
                 overflow-x: hidden;
+                min-height: 100vh;
+                height: auto;
+                display: block;
             }
 
             .main-container {
@@ -331,6 +346,10 @@
                 padding-bottom: 6px;
             }
 
+            #clearBtn {
+                flex-basis: 100%;
+                margin-top: 5px;
+            }
 
         }
 
@@ -496,13 +515,13 @@
         }
 
         .copyright-footer {
-            position: fixed;
-            bottom: 10px;
+            margin-top: 40px;
             width: 100%;
             text-align: center;
             color: rgba(255, 255, 255, 0.5);
             font-size: 0.8rem;
             pointer-events: none;
+            padding-bottom: 20px;
         }
     </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -513,6 +532,7 @@
 </head>
 
 <body>
+    <div class="fixed-background"></div>
     <div class="main-container">
         <h1>
             <span class="brand">
@@ -562,10 +582,10 @@
             <ul id="historyList" class="history-list">
             </ul>
         </div>
+        <footer class="copyright-footer">
+            <p>&copy; Copyright by Harsh Mishra, @ Copy Paste Helper</p>
+        </footer>
     </div>
-    <footer class="copyright-footer">
-        <p>&copy; Copyright by Harsh Mishra, @ Copy Paste Helper</p>
-    </footer>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const textInput = document.querySelector('#textInput');
