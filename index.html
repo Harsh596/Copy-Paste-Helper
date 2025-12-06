@@ -319,10 +319,7 @@
                 padding: 16px;
             }
 
-            #clearBtn {
-                flex-basis: 100%;
-                margin-top: 5px;
-            }
+
 
             .history-container {
                 max-width: 100%;
@@ -551,7 +548,12 @@
                 </button>
                 <span class="btn-label">paste</span>
             </div>
-            <button id="clearBtn" class="btn btn-clear">CLEAR</button>
+            <div class="btn-wrapper">
+                <button id="clearBtn" class="btn btn-clear">
+                    <span class="icon" style="font-size: 1.5rem;">🗑️</span>
+                </button>
+                <span class="btn-label">clear</span>
+            </div>
         </div>
         <div id="statusMessage" class="status-message hidden">Copied!</div>
 
